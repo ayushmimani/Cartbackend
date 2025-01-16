@@ -8,6 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use  APP\Models\Product;
+use  APP\Models\Cart;
+use  APP\Models\ProductRating;
 
 class User extends Authenticatable
 {
@@ -20,6 +22,10 @@ class User extends Authenticatable
 
     public function Cart(){
         return $thid->hasMany(Cart::class,'user_id');
+    }
+
+    public function ProductRating(){
+        $this->hasMany(ProductRating::class);
     }
 
     /**

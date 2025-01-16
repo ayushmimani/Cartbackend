@@ -40,27 +40,32 @@ class CartController extends Controller
 // }
 
 public function addtocart(Request $request)
-{
+{   
     $user = Auth::user();
     // Validate the incoming request
     $validatecart = $request->validate([
-        'quantity' => 'required',
-        'product_id' => 'required|exists:products,id', // Ensure product exists
+        'quantity' => 'required|integer|min:0',
+        'product_id' => 'required|exists:products,id',
     ]);
     //if quantity is zero then delete from cart
-    if($request->quantity===0){
+    if ($request->quantity == 0) {
+        dd("quantity",$request->quantity);
         $removefromcart = Cart::where('user_id', $user->id)
-        ->where('product_id', $request->product_id)
-        ->where('order_placed', 0) // Ensure it's an active cart
-        ->first();
-        if($removefromcart){
+            ->where('product_id', $request->product_id)
+            ->where('order_placed', 0)
+            ->first();
+ 
+           
+
+        if ($removefromcart) {
             $removefromcart->delete();
+            return response()->json(['message' => 'Product removed from cart'], 200);
         }
     }
     // Check if the product already exists in the cart for the user
     $cartItem = Cart::where('user_id', $user->id)
         ->where('product_id', $request->product_id)
-        ->where('order_placed', 0) // Ensure it's an active cart
+        ->where('order_placed', 0)->where('quantity','!=','0') // Ensure it's an active cart
         ->first();
     if ($cartItem) {
         // Update the quantity if the item exists
@@ -82,7 +87,7 @@ public function addtocart(Request $request)
     public function cartdata(){
 
         $user=Auth::user();
-        $cartdata=Cart::with('product')->where('user_id', $user->id)->get();
+        $cartdata=Cart::with('product')->where('user_id', $user->id)->where('order_dispatched',0)->get();
         return response()->json([
             'status'=>'success',
             'info'=>$cartdata
@@ -130,7 +135,8 @@ public function addtocart(Request $request)
         ]);
 
         if($cartvalidate){
-            $cartinfo = Cart::where('product_id', $request->product_id)->where('user_id',$user->id)->get();
+            $cartinfo = Cart::where('product_id', $request->product_id)->where('user_id',$user->id)
+            ->where('order_dispatched',0)->get();
             if($cartinfo) {
                 return response()->json([
                     'status'=>'success',
@@ -144,4 +150,22 @@ public function addtocart(Request $request)
             }
         }
       }  
+
+      public function getUserCartHistory(){
+        $user = Auth::user();
+        if($user){
+            $carthistory = Cart::with('product')->where('user_id', $user->id)->where('order_dispatched',1)->get();
+            if($carthistory){
+                return response()->json([
+                     "status"=>"success",
+                     "info"=>$carthistory
+                ]);
+            }else{
+                return response()->json([
+                    "status"=>"failed",
+                    "info"=>"cart history is not fetch"
+               ]);
+            }
+        }
+      }
 }

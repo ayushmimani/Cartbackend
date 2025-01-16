@@ -33,8 +33,6 @@ class ProductController extends Controller
         }
 
         $user = Auth::user();
-
-      
         Product::create([
             'productname' => $validatedata['productname'],
             'description'=>$validatedata['description'],
@@ -64,5 +62,21 @@ class ProductController extends Controller
     ->get();
 
     return response()->json($products, 200);
+    }
+
+    public function getproductinfo($id){
+         $productinfo = Product::find($id);
+
+         if($productinfo){
+             return response()->json([
+                'status'=>"success",
+                'info'=>$productinfo
+             ]);
+         }else{
+            return response()->json([
+                'status'=>"fail",
+                'info'=>'error to get product info'
+            ]);
+         }
     }
 }

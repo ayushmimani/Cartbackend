@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\User;
 use App\Models\cart;
+use App\Models\Comment;
 use Illuminate\Database\Eloquent\Model;
 
 
@@ -20,7 +21,13 @@ class Product extends Model
         return $thid->hasMany(Cart::class, 'product_id');
     }
 
-    
+    public function Comment(){
+        $this->hasMany(Comment::class);
+    }
+
+    public function ProductRating(){
+        $this->hasOne(ProductRating::class);
+    }
 
     
 }

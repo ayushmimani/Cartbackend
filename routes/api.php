@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\ProductRatingController;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Product;
 use App\Models\User;
@@ -127,7 +129,8 @@ Route::get('/user',function(){
     Route::post('/addproduct', [ProductController::class, 'store'])->middleware('auth:sanctum');
     Route::get('/getuserproductlist', [ProductController::class, 'productuser'])->middleware('auth:sanctum');
     Route::get('/getuserorderlist',[ProductController::class,'orderuser'])->middleware('auth:sanctum');
-
+    Route::get('getproductinfo/{id}',[ProductController::class,'getproductinfo'])->middleware('auth:sanctum');
+    
     Route::get('showproduct',function(){
         $products = Product::all();
         return response()->json([
@@ -136,12 +139,22 @@ Route::get('/user',function(){
         ]);
     });
 
-    Route::post('addtocart',[CartController::class,'addtocart'])->middleware('auth:sanctum');
+    //Route::middleware('api')->post('/addtocart', [CartController::class, 'addToCart']);
+
+    Route::post('addtocart',[CartController::class,'addtocart'])->middleware(['api','auth:sanctum']);
     Route::get('cartdata',[CartController::class,'cartdata'])->middleware('auth:sanctum');
     Route::post('orderplaced',[CartController::class,'orderplaced'])->middleware('auth:sanctum');
     Route::post('orderdispatched',[CartController::class,'orderdispatched'])->middleware('auth:sanctum');
     Route::post('cartinfo',[CartController::class,'cartinfo'])->middleware('auth:sanctum');
-  
-// Route::get('/user', function (Request $request) {
+    Route::get('getuserinfo',[UserController::class,'getuserinfo'])->middleware('auth:sanctum');
+    Route::get('getUserCartHistory',[CartController::class,'getUserCartHistory'])->middleware('auth:sanctum');
+    
+    Route::post('addcomment',[CommentController::class,'Addcomment'])->middleware('auth:sanctum');
+    Route::get('getcomment/{id}',[CommentController::class,'Getcomment'])->middleware('auth:sanctum');
+   
+    Route::post('rateproduct',[ProductRatingController::class,'RateProduct'])->middleware('auth:sanctum');
+    Route::get('GetRating/{id}',[ProductRatingController::class,'GetRating'])->middleware('auth:sanctum');
+
+    // Route::get('/user', function (Request $request) {
 //     return $request->user();
 // })->middleware('auth:sanctum');
