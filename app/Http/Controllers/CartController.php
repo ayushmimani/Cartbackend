@@ -55,8 +55,6 @@ public function addtocart(Request $request)
             ->where('order_placed', 0)
             ->first();
  
-           
-
         if ($removefromcart) {
             $removefromcart->delete();
             return response()->json(['message' => 'Product removed from cart'], 200);
